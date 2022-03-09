@@ -7,14 +7,14 @@ mac_packages="cocoapods watchman iterm2 watson cleanmymac alfred rectangle image
 
 node_packages="vscode-langservers-extracted neovim typescript rimraf ts-node commitizen @fsouza/prettierd vercel nodemon rollup"
 
-bold="$(tput bold 2>/dev/null || printf '')"
-grey="$(tput setaf 0 2>/dev/null || printf '')"
-underline="$(tput smul 2>/dev/null || printf '')"
-red="$(tput setaf 1 2>/dev/null || printf '')"
-green="$(tput setaf 2 2>/dev/null || printf '')"
-yellow="$(tput setaf 3 2>/dev/null || printf '')"
+# bold="$(tput bold 2>/dev/null || printf '')"
+# grey="$(tput setaf 0 2>/dev/null || printf '')"
+# underline="$(tput smul 2>/dev/null || printf '')"
+# red="$(tput setaf 1 2>/dev/null || printf '')"
+# green="$(tput setaf 2 2>/dev/null || printf '')"
+# yellow="$(tput setaf 3 2>/dev/null || printf '')"
 blue="$(tput setaf 4 2>/dev/null || printf '')"
-magenta="$(tput setaf 5 2>/dev/null || printf '')"
+# magenta="$(tput setaf 5 2>/dev/null || printf '')"
 no_color="$(tput sgr0 2>/dev/null || printf '')"
 
 printf "\n"
@@ -35,13 +35,6 @@ function install_packages() {
 
 }
 
-# log "Creating an SSH key for you..."
-# ssh-keygen -t rsa
-#
-# log "Please add this public key to Github \n"
-# log "https://github.com/account/ssh \n"
-# read -pr "Press [Enter] key after this..."
-#
 if [ "${os_type}" == "Darwin" ]; then
 	log "Installing xcode-stuff"
 	xcode-select --install
@@ -66,6 +59,23 @@ fi
 log "Cleaning up brew"
 brew cleanup
 
+log "Creating an SSH key for you..."
+# ssh-keygen -t rsa
+ssh-keygen -t ed25519 -C "darkristy2002@gmail.com"
+touch ~/.ssh/config
+
+echo "
+Host *
+  AddKeysToAgent yes
+  UseKeychain yes
+  IdentityFile ~/.ssh/id_ed25519
+" >>~/.ssh/config
+
+ssh-add --apple-use-keychain ~/.ssh/id_ed25519
+
+gh auth login
+gh ssh-key add ~/.ssh/id_ed25519.pub -t github
+
 log "Setting up Node"
 
 if test ! "$(which yarn)"; then
@@ -89,21 +99,25 @@ if ! [ "$SHELL" == "$(which zsh)" ]; then
 	chsh -s "$(which zsh)"
 fi
 
+if [ "${os_type}" == "Darwin" ]; then
+	echo "export ZDOTDIR=$HOME/.config/zsh" >>~/.zprofile
+else
+	echo "export ZDOTDIR=$HOME/.config/zsh" >>~/.profile
+fi
+
 log "Stowing dotfiles"
 
 stow zsh
 stow git
+stow nvim
 stow tmux
 stow starship
-
-# if [ "${os_type}" == "Darwin" ]; then
-# 	stow zprofile
-# else
-# 	echo "export ZDOTDIR=$HOME/.config/zsh" >>~/.profile
-# fi
 
 log "Bundling zsh plugins"
 
 antibody bundle <~/.zsh_plugins.txt >~/.zsh_plugins.sh
+
+log "Installing Hasklug Nerdfont"
+brew tap homebrew/cask-fonts && brew install --cask font-hasklug-nerd-font
 
 log "Done!"
