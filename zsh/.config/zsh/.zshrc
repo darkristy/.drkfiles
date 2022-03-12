@@ -1,7 +1,5 @@
 [ -s ~/.fig/shell/pre.sh ] && source ~/.fig/shell/pre.sh
 
-source ${HOME}/.zsh_plugins.sh
-
 export ZDOTDIR=$HOME/.config/zsh
 HISTFILE=~/.zsh_history
 
@@ -25,5 +23,9 @@ source "$ZDOTDIR/zsh-functions.zsh"
 
 zsh_add_file "zsh-exports.zsh"
 zsh_add_file "zsh-aliases.zsh"
+
+# Plugins
+zsh_add_plugin "zsh-users/zsh-autosuggestions"
+zsh_add_plugin "zsh-users/zsh-syntax-highlighting"
 
 [ -s ~/.fig/fig.sh ] && source ~/.fig/fig.sh
