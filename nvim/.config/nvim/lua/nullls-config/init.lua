@@ -3,15 +3,9 @@ local b = null_ls.builtins
 
 null_ls.setup({
 	sources = {
-		-- b.diagnostics.eslint_d,
-		-- b.formatting.eslint_d,
-		-- b.code_actions.eslint_d,
 		b.formatting.stylua,
-    b.formatting.shfmt,
-    b.diagnostics.shellcheck,
-		-- b.formatting.prettierd.with({
-		-- 	filetypes = { "html", "yaml", "markdown", "json", "scss" },
-		-- }),
+		b.formatting.shfmt,
+		b.diagnostics.shellcheck,
 		b.diagnostics.eslint.with({ -- eslint or eslint_d
 			prefer_local = "node_modules/.bin",
 		}),

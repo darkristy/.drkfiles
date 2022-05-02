@@ -16,16 +16,16 @@ end
 local install_path = fn.stdpath "data" .. "/site/pack/packer/start/packer.nvim"
 
 if fn.empty(fn.glob(install_path)) > 0 then
-  PACKER_BOOTSTRAP = fn.system {
-    "git",
-    "clone",
-    "--depth",
-    "1",
-    "https://github.com/wbthomason/packer.nvim",
-    install_path,
-  }
-  print "Installing packer close and reopen Neovim..."
-  vim.cmd [[packadd packer.nvim]]
+	PACKER_BOOTSTRAP = fn.system {
+		"git",
+		"clone",
+		"--depth",
+		"1",
+		"https://github.com/wbthomason/packer.nvim",
+		install_path,
+	}
+	print "Installing packer close and reopen Neovim..."
+	vim.cmd [[packadd packer.nvim]]
 end
 
 -- Autocommand that reloads neovim whenever you save the plugins.lua file
@@ -41,23 +41,8 @@ packer.init(Drk.plugins.packer.init)
 
 return packer.startup(function(use)
 	use("wbthomason/packer.nvim")
-	-- Syntax Highlighting and Visual Plugins
-	use({
-		"kdheepak/tabline.nvim",
-		config = "require'tabline-config'",
-		disable = not is_enabled("tabline"),
-		requires = {
-			{
-				"nvim-lualine/lualine.nvim",
-				disable = not is_enabled("tabline"),
-				config = "require'lualine-config'",
-			},
-			{ "kyazdani42/nvim-web-devicons" },
-		},
-	})
-	use({ "williamboman/nvim-lsp-installer" })
-	use({ "ThePrimeagen/harpoon" })
-	-- Tree-Sitter
+
+	-- Syntax Highlighting
 	use({
 		"nvim-treesitter/nvim-treesitter",
 		run = ":TSUpdate",
@@ -69,21 +54,9 @@ return packer.startup(function(use)
 		disable = not is_enabled("treesitter"),
 		after = "nvim-treesitter",
 	})
-	use({ "p00f/nvim-ts-rainbow", disable = not is_enabled("treesitter"), after = "nvim-treesitter" })
-	use({ "windwp/nvim-ts-autotag", disable = not is_enabled("treesitter"), after = "nvim-treesitter" })
-	use({ "JoosepAlviste/nvim-ts-context-commentstring", after = "nvim-treesitter" })
-
-	use({
-		"ThePrimeagen/refactoring.nvim",
-		config = "require'refactor-config'",
-		requires = { { "nvim-lua/plenary.nvim" } },
-	})
-
-	-- Colorschemes
-	use({ "rose-pine/neovim", as = "rose-pine", opt = true })
-	use({ "catppuccin/nvim", as = "catppuccin" })
 
 	-- LSP and Autocomplete
+	use({ "williamboman/nvim-lsp-installer" })
 	use({ "neovim/nvim-lspconfig" })
 	use({ "jose-elias-alvarez/null-ls.nvim", config = "require'nullls-config'" })
 	use({ "jose-elias-alvarez/nvim-lsp-ts-utils" })
@@ -107,15 +80,36 @@ return packer.startup(function(use)
 		disable = not is_enabled("autopairs"),
 	})
 	use("simrat39/rust-tools.nvim")
+	use({ "folke/trouble.nvim", disable = not is_enabled("trouble"), config = "require'trouble-config'" })
+
+	use({ "windwp/nvim-ts-autotag", disable = not is_enabled("treesitter"), after = "nvim-treesitter" })
+	use({ "numToStr/Comment.nvim", opt = true, keys = { "gc", "gcc" }, config = "require'comment-config'" })
+	use({ "JoosepAlviste/nvim-ts-context-commentstring", after = "nvim-treesitter" })
+
+	--Cosmetic
+	use({
+		"kdheepak/tabline.nvim",
+		config = "require'tabline-config'",
+		disable = not is_enabled("tabline"),
+		requires = {
+			{
+				"nvim-lualine/lualine.nvim",
+				disable = not is_enabled("tabline"),
+				config = "require'lualine-config'",
+			},
+			{ "kyazdani42/nvim-web-devicons" },
+		},
+	})
+	use({ "p00f/nvim-ts-rainbow", disable = not is_enabled("treesitter"), after = "nvim-treesitter" })
+	use({ "lukas-reineke/indent-blankline.nvim", config = "require'indentline-config'" })
+
+	-- Colorschemes
+	use({ "rose-pine/neovim", as = "rose-pine", opt = true })
+	use({ "catppuccin/nvim", as = "catppuccin" })
 
 	-- Version Control
-	use({ "lewis6991/gitsigns.nvim", requires = { "nvim-lua/plenary.nvim" }, disable = not is_enabled("gitsigns"), config="require'gitsigns-config'" })
-	-- Terminal Integration
-	use({
-		"akinsho/nvim-toggleterm.lua",
-		disable = not is_enabled("toggleterm"),
-		config = 'require"toggleterm-config"',
-	})
+	use({ "lewis6991/gitsigns.nvim", requires = { "nvim-lua/plenary.nvim" }, disable = not is_enabled("gitsigns"), config = "require'gitsigns-config'" })
+
 	-- Navigation
 	use({
 		"nvim-telescope/telescope.nvim",
@@ -134,18 +128,21 @@ return packer.startup(function(use)
 	})
 
 	-- Other
-	use({ "folke/trouble.nvim", disable = not is_enabled("trouble"), config = "require'trouble-config'" })
-	use({ "folke/which-key.nvim", event = "BufWinEnter", config="require'which-key-config'" })
-	use({ "numToStr/Comment.nvim", opt = true, keys = { "gc", "gcc" }, config = "require'comment-config'" })
-	use({ "lukas-reineke/indent-blankline.nvim", config = "require'indentline-config'" })
+	use({ "folke/which-key.nvim", event = "BufWinEnter", config = "require'which-key-config'" })
+	use({
+		"akinsho/nvim-toggleterm.lua",
+		disable = not is_enabled("toggleterm"),
+		config = 'require"toggleterm-config"',
+	})
+
 
 	for _, plugin in pairs(Drk.plugins.user) do
 		use(plugin)
 	end
 
 	-- Automatically set up your configuration after cloning packer.nvim
-  -- Put this at the end after all plugins
-  if PACKER_BOOTSTRAP then
-    require("packer").sync()
-  end
+	-- Put this at the end after all plugins
+	if PACKER_BOOTSTRAP then
+		require("packer").sync()
+	end
 end)

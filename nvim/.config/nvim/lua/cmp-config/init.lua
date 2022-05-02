@@ -1,4 +1,4 @@
-local lspkind =  Drk.utils.plugins.require("lspkind")
+local lspkind = Drk.utils.plugins.require("lspkind")
 
 local has_words_before = function()
 	local line, col = unpack(vim.api.nvim_win_get_cursor(0))
@@ -9,7 +9,7 @@ local feedkey = function(key, mode)
 	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
 end
 
-local cmp =  Drk.utils.plugins.require("cmp")
+local cmp = Drk.utils.plugins.require("cmp")
 ---@diagnostic disable-next-line: redundant-parameter
 cmp.setup({
 	snippet = {
@@ -57,8 +57,12 @@ cmp.setup({
 		}),
 	},
 	sources = Drk.plugins.cmp.sources,
-	documentation = {
-		border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+	-- documentation = {
+	-- 	border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+	-- },
+	window = {
+		completion = cmp.config.window.bordered(),
+		documentation = cmp.config.window.bordered(),
 	},
 	experimental = {
 		ghost_text = false,

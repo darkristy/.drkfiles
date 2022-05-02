@@ -1,11 +1,10 @@
-vim.g.nvim_tree_ignore = { "*.tmp", ".git" }
-vim.g.nvim_tree_indent_markers = 1
 require("nvim-tree").setup({
+	nvim_tree_indent_markers = 1,
+	nvim_tree_ignore = { "*.tmp", ".git" },
 	disable_netrw = true,
 	hijack_netrw = true,
 	open_on_setup = true,
 	ignore_ft_on_setup = { "dashboard" },
-	auto_close = true,
 	open_on_tab = false,
 	tree_docs = { enable = true },
 	hijack_cursor = true,
