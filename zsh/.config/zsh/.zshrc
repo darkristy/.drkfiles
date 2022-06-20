@@ -8,7 +8,7 @@ unsetopt PROMPT_SP
 # load + start compinit
 autoload -U compinit && compinit
 # automatic cd into directory
-setopt autocd
+setopt auto_cd
 # correct if completion is no possible
 zstyle ':completion:*' completer _complete _approximate
 
@@ -28,4 +28,6 @@ zsh_add_file "zsh-aliases.zsh"
 zsh_add_plugin "zsh-users/zsh-autosuggestions"
 zsh_add_plugin "zsh-users/zsh-syntax-highlighting"
 
+[ -s "/Users/darkristy/.bun/_bun" ] && source "/Users/darkristy/.bun/_bun"
 [ -s ~/.fig/fig.sh ] && source ~/.fig/fig.sh
+

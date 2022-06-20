@@ -2,12 +2,14 @@ return {
 	settings = {
 		Lua = {
 			diagnostics = {
-				globals = { "vim" }, -- Get the language server to recognize the `vim` global
+				globals = { "vim" },
 			},
 			workspace = {
-				library = vim.api.nvim_get_runtime_file("", true), -- Make the server aware of Neovim runtime files
+				library = {
+					[vim.fn.expand "$VIMRUNTIME/lua"] = true,
+					[vim.fn.stdpath "config" .. "/lua"] = true,
+				},
 			},
-			-- Do not send telemetry data containing a randomized but unique identifier
 			telemetry = {
 				enable = false,
 			},

@@ -88,6 +88,9 @@ log "Installing global node packages"
 
 install_packages "${node_packages}" "yarn"
 
+log "Installing Rust"
+rustup-init
+
 log "Setting up shell..."
 log "Changing Shell to Homebrew ZSH"
 
@@ -104,6 +107,8 @@ if [ "${os_type}" == "Darwin" ]; then
 else
 	echo "export ZDOTDIR=$HOME/.config/zsh" >>~/.profile
 fi
+
+[-d "nvim"] && git clone https://github.com/darkristy/drk-nivm.git nvim
 
 log "Stowing dotfiles"
 

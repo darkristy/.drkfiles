@@ -1,24 +1,12 @@
-require("drk")
+require("user")
 
--- General
-require("drk.options")
-require("drk.plugins")
-require("drk.keybindings")
+require("user.options")
+require("user.plugins")
+require("user.bindings")
 
 -- LSP and Autocomplete
 require("language-servers")
 
-local user_config = CONFIG_PATH .. "/lua/drk/user-config/init.lua"
-
-if not Drk.utils.file.exists(user_config) then
-	Drk.utils.file.create(user_config)
+if User.settings.colorscheme ~= "custom" then
+	User.utils.plugin.require("colorscheme." .. User.settings.colorscheme)
 end
-
--- User config that overrides the above
-vim.cmd("luafile " .. user_config)
-
-if Drk.settings.colorscheme ~= "custom" then
-	Drk.utils.plugins.require("colorscheme." .. Drk.settings.colorscheme)
-end
-
-
