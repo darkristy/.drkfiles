@@ -7,7 +7,6 @@ export PATH="$PATH:$HOME/.cargo/bin"
 export PATH="$PATH:$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin"
 export PATH="$HOME/neovim/bin:$PATH"
 
-
 eval "$(starship init zsh)"
 source $HOME/.cargo/env
 

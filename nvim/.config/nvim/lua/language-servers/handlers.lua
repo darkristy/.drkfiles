@@ -1,7 +1,7 @@
 local M = {}
 
 M.setup = function()
-	local config = User.settings.diagnostics
+	local config = Drk.settings.diagnostics
 
 	vim.diagnostic.config(config)
 
@@ -14,58 +14,46 @@ M.setup = function()
 	})
 end
 
-local function lsp_mappings(bufnr)
-	local opts = { noremap = true, silent = true }
-	local keymap = vim.api.nvim_buf_set_keymap
+local function ts_utils_init(client, bufnr)
+	if client.name == "tsserver" then
+		local ts_utils = require("nvim-lsp-ts-utils")
 
-	keymap(bufnr, "n", "gs", ":TSLspOrganize<CR>", opts)
-	keymap(bufnr, "n", "gr", ":TSLspRenameFile<CR>", opts)
-	keymap(bufnr, "n", "gi", ":TSLspImportAll<CR>", opts)
-
-	keymap(bufnr, "n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", opts)
-	keymap(bufnr, "n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
-	keymap(bufnr, "n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
-	keymap(bufnr, "n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
-	keymap(bufnr, "n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
-	keymap(bufnr, "n", "<leader>wa", "<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>", opts)
-	keymap(bufnr, "n", "<leader>wr", "<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>", opts)
-	keymap(
-		bufnr,
-		"n",
-		"<leader>wl",
-		"<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>",
-		opts
-	)
-	keymap(bufnr, "n", "<leader>D", "<cmd>lua vim.lsp.buf.type_definition()<CR>", opts)
-	keymap(bufnr, "n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
-	keymap(bufnr, "n", "<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
-	keymap(bufnr, "v", "<leader>ca", "<cmd>lua vim.lsp.buf.range_code_action()<CR>", opts)
-	keymap(bufnr, "n", "[d", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>", opts)
-	keymap(bufnr, "n", "]d", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>", opts)
-	keymap(bufnr, "n", "<leader>q", "<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>", opts)
-	keymap(
-		bufnr,
-		"n",
-		"gl",
-		'<cmd>lua vim.diagnostic.open_float({ border = "rounded" })<CR>',
-		opts
-	)
-	keymap(
-		bufnr,
-		"n",
-		"<leader>so",
-		[[<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>]],
-		opts
-	)
-	vim.api.nvim_command([[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]])
+		local ts_utils = Drk.utils.plugin.require("nvim-lsp-ts-utils")
+		ts_utils.setup({
+			auto_inlay_hints = false,
+		})
+		ts_utils.setup_client(client)
+	end
 end
 
-local ts_utils = function(bufnr, client)
-	local ts_utils = User.utils.plugin.require("nvim-lsp-ts-utils")
-	ts_utils.setup({
-		auto_inlay_hints = false,
-	})
-	ts_utils.setup_client(client)
+local function lsp_mappings(bufnr, client)
+	local opts = { noremap = true, silent = true }
+	local function keymap(...)
+		vim.api.nvim_buf_set_keymap(bufnr, ...)
+	end
+
+	keymap("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
+	keymap("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
+	keymap("n", "<leader>rn", "<cmd> lua vim.lsp.buf.rename()<CR>", opts)
+	keymap("n", "<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
+	keymap("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
+	keymap("n", "gs", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
+	keymap("n", "gl", "<cmd>lua vim.diagnostic.open_float()<CR>", opts)
+	keymap("n", "gp", "<cmd>Lspsaga preview_definition<CR>", opts)
+
+	keymap("n", "[d", "<cmd>lua vim.diagnostic.goto_prev()<CR>", opts)
+	keymap("n", "]d", "<cmd>lua vim.diagnostic.goto_next()<CR>", opts)
+
+	keymap("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", opts)
+	keymap("n", "<leader>D", "<cmd>lua vim.lsp.buf.type_definition()<CR>", opts)
+	keymap("n", "<leader>q", "<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>", opts)
+
+	if client.name == "tsserver" then
+		-- typescript helpers
+		keymap("n", "gs", ":TSLspOrganize<CR>", opts)
+		keymap("n", "gr", ":TSLspRenameFile<CR>", opts)
+		keymap("n", "gi", ":TSLspImportAll<CR>", opts)
+	end
 end
 
 M.on_attach = function(client, bufnr)
@@ -74,13 +62,15 @@ M.on_attach = function(client, bufnr)
 		client.resolved_capabilities.document_range_formatting = false
 	end
 
-	lsp_mappings(bufnr)
-	ts_utils(bufnr, client)
+	vim.api.nvim_command([[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]])
 
-	User.utils.plugin.require("illuminate").on_attach(client)
+	lsp_mappings(bufnr, client)
+	ts_utils_init(client, bufnr)
+
+	Drk.utils.plugin.require("illuminate").on_attach(client)
 end
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
-M.capabilities = User.utils.plugin.require("cmp_nvim_lsp").update_capabilities(capabilities)
+M.capabilities = Drk.utils.plugin.require("cmp_nvim_lsp").update_capabilities(capabilities)
 
 return M
