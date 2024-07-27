@@ -8,6 +8,7 @@ export PATH="$HOME/neovim/bin:$PATH"
 
 eval "$(starship init zsh)"
 source $HOME/.cargo/env
+source $(brew --prefix)/opt/antidote/share/antidote/antidote.zsh
 
 export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"
