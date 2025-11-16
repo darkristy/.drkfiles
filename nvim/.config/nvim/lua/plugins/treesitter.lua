@@ -1,80 +1,83 @@
 return {
-  { "nvim-treesitter/playground", cmd = "TSPlaygroundToggle" },
-
   {
     "nvim-treesitter/nvim-treesitter",
-    opts = {
-      ensure_installed = {
-        "astro",
-        "css",
-        "lua",
-        "gitignore",
-        "go",
-        "http",
-        "rust",
-        "scss",
-        "sql",
-        "typescript",
-        "svelte",
-        "tsx",
-      },
+    event = { "BufReadPre", "BufNewFile" },
+    build = ":TSUpdate",
+    config = function()
+      -- import nvim-treesitter plugin
+      local treesitter = require("nvim-treesitter.configs")
 
-      -- matchup = {
-      -- 	enable = true,
-      -- },
-
-      -- https://github.com/nvim-treesitter/playground#query-linter
-      query_linter = {
-        enable = true,
-        use_virtual_text = true,
-        lint_events = { "BufWrite", "CursorHold" },
-      },
-
-      playground = {
-        enable = true,
-        disable = {},
-        updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
-        persist_queries = true, -- Whether the query persists across vim sessions
-        keybindings = {
-          toggle_query_editor = "o",
-          toggle_hl_groups = "i",
-          toggle_injected_languages = "t",
-          toggle_anonymous_nodes = "a",
-          toggle_language_display = "I",
-          focus_language = "f",
-          unfocus_language = "F",
-          update = "R",
-          goto_node = "<cr>",
-          show_help = "?",
+      -- configure treesitter
+      treesitter.setup({ -- enable syntax highlighting
+        highlight = {
+          enable = true,
         },
-      },
-    },
-    config = function(_, opts)
-      require("nvim-treesitter.configs").setup(opts)
+        -- enable indentation
+        indent = { enable = true },
 
-      -- MDX
-      vim.filetype.add({
-        extension = {
-          mdx = "mdx",
+        -- ensure these languages parsers are installed
+        ensure_installed = {
+          "json",
+          "javascript",
+          "typescript",
+          "tsx",
+          "go",
+          "yaml",
+          "html",
+          "css",
+          "python",
+          "http",
+          "prisma",
+          "markdown",
+          "markdown_inline",
+          "svelte",
+          "graphql",
+          "bash",
+          "lua",
+          "vim",
+          "dockerfile",
+          "gitignore",
+          "query",
+          "vimdoc",
+          "c",
+          "java",
+          "rust",
+          "ron",
+        },
+        incremental_selection = {
+          enable = true,
+          keymaps = {
+            init_selection = "<C-space>",
+            node_incremental = "<C-space>",
+            scope_incremental = false,
+          },
+        },
+        additional_vim_regex_highlighting = false,
+      })
+    end,
+  },
+  -- NOTE: js,ts,jsx,tsx Auto Close Tags
+  {
+    "windwp/nvim-ts-autotag",
+    enabled = true,
+    ft = { "html", "xml", "javascript", "typescript", "javascriptreact", "typescriptreact", "svelte" },
+    config = function()
+      -- Independent nvim-ts-autotag setup
+      require("nvim-ts-autotag").setup({
+        opts = {
+          enable_close = true, -- Auto-close tags
+          enable_rename = true, -- Auto-rename pairs
+          enable_close_on_slash = false, -- Disable auto-close on trailing `</`
+        },
+        per_filetype = {
+          ["html"] = {
+            enable_close = true, -- Disable auto-closing for HTML
+          },
+          ["typescriptreact"] = {
+            enable_close = true, -- Explicitly enable auto-closing (optional, defaults to `true`)
+          },
         },
       })
-
-      vim.filetype.add({
-        extension = {
-          mdoc = "markdoc",
-        },
-      })
-
-      local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
-      parser_config.markdoc = {
-        install_info = {
-          url = "https://github.com/markdoc-extra/tree-sitter-markdoc",
-          files = { "src/parser.c" },
-          branch = "main",
-        },
-        filetype = "markdoc",
-      }
-      vim.treesitter.language.register("markdown", "mdx")
     end,
   },
 }

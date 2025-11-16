@@ -1,0 +1,25 @@
+-- return {
+--   "akinsho/bufferline.nvim",
+--
+--   version = "*",
+--   dependencies = { "nvim-tree/nvim-web-devicons" },
+--   config = function()
+--     require("bufferline").setup({
+--       options = {
+--         mode = "buffers",
+--         numbers = "none",
+--         diagnostics = "nvim_lsp",
+--         separator_style = "none",
+--         show_buffer_close_icons = false,
+--         show_close_icon = false,
+--         indicator = {
+--           style = "none", -- 🚫 removes underline / colored line
+--         },
+--       },
+--     })
+--   end,
+-- }
+--
+--
+
+return {}

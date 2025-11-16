@@ -1,6 +1,40 @@
--- Options are automatically loaded before lazy.nvim startup
--- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
--- Add any additional options here
+vim.g.mapleader = " "
 
-vim.opt.swapfile = false
-vim.g.mellow_transparent = true
+local opt = vim.opt -- to opt.options
+
+-- opt.termguicolors = true
+-- vim.opt.colorcolumn = "100"
+opt.hidden = true -- Enable background buffers
+opt.textwidth = 120
+opt.backup = false
+opt.encoding = "utf-8"
+opt.number = true -- Show line numbers
+opt.shiftwidth = 2
+opt.splitbelow = true -- Put new windows below current
+opt.splitright = true -- Put new windows right of current
+opt.tabstop = 2
+opt.mouse = ""
+opt.wrap = false
+opt.undodir = vim.fn.stdpath("config") .. "/undo"
+opt.undofile = true
+opt.background = "dark" -- tell vim what the background color looks like
+opt.breakindent = true
+opt.linebreak = true
+opt.clipboard = "unnamedplus"
+opt.updatetime = 300 -- Faster completion
+opt.timeoutlen = 500 -- By default timeoutlen is 1000 ms
+opt.smarttab = true -- Makes tabbing smarter will realize you have 2 vs 4
+opt.termguicolors = true -- You will have bad experience for diagnostic messages when it's default 4000.
+opt.cursorline = true -- Enable highlighting of the current line
+opt.expandtab = true -- Converts tabs to spaces
+opt.smartindent = true -- Makes indenting smart
+opt.autoindent = true -- Good auto indent
+opt.conceallevel = 0 -- So that I can see `` in markdown files
+opt.laststatus = 3 -- Always display the status line
+opt.ruler = true -- Show the cursor position all the time
+opt.cmdheight = 1 -- More space for displaying messages
+opt.showtabline = 0
+opt.pumheight = 10 -- Makes popup menu smaller
+opt.swapfile = false
+opt.completeopt = "menuone,noselect"
+opt.mousemodel = "extend"
